@@ -1,0 +1,25 @@
+/* Outlines distinguish standalone actions from navigation, branding and work cards. */
+.project-header :is(.back-link,.project-contact),
+:is(.identity-about,.recognition-all,.about-awards-link,.image-gallery-link,.chapter-skip,.film-direct-link,.film-qr-open),
+.project-next>.text-link,.awards-page>.text-link{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:44px;padding:9px 16px;
+  border:1px solid currentColor;border-radius:5px;text-decoration:none;line-height:1.6;
+  transition:background-color .16s,border-color .16s;
+}
+.project-header :is(.back-link,.project-contact){color:var(--ink);white-space:nowrap;flex-shrink:0;min-width:44px}
+.project-header :is(.back-link,.project-contact):hover{background:#ffffff12}
+.recognition-grid>a{border:1px solid #9ca998}
+:is(.identity-about,.recognition-all,.about-awards-link,.image-gallery-link,.chapter-skip):hover{background:#93653e12}
+:is(.back-link,.project-contact,.identity-about,.recognition-all,.about-awards-link,.image-gallery-link,.chapter-skip,.film-direct-link,.film-qr-open,.text-link):focus-visible{outline:2px solid var(--olive,#93653e);outline-offset:4px}
+@media(max-width:760px){
+  .project-header{display:flex;align-items:center;gap:8px}
+  .project-header .wordmark{font-size:24px;flex-shrink:0}
+  .project-header .back-link{position:static;transform:none;margin-left:auto;gap:7px}
+  .project-header :is(.back-link,.project-contact){display:inline-flex;font-size:12px;padding:8px 11px;min-height:44px}
+}
+@media(max-width:380px){
+  .project-header{gap:6px}.project-header .wordmark{font-size:20px}
+  .project-header :is(.back-link,.project-contact){font-size:11px;padding-inline:9px;gap:5px}
+  .project-header .back-link svg{width:16px}
+}
+@media(prefers-reduced-motion:reduce){.project-header a,:is(.identity-about,.recognition-all,.about-awards-link,.image-gallery-link,.chapter-skip,.film-direct-link,.film-qr-open){transition:none}}
