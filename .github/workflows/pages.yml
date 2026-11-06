@@ -1,0 +1,38 @@
+name: Publish Whisper portfolio
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and verify static website
+        shell: bash
+        run: |
+          curl --fail --location --retry 3 --output site.zip 'https://github.com/Whisper-5122/whisper-5122.github.io/releases/download/site-20261106-af6663a/whisper-5122-github-pages-latest.zip'
+          echo '9387a5d88b9d468079f62074e8e05246895294b676e3cc33f8f8ee0580149d47  site.zip' | sha256sum --check -
+          python3 -m zipfile -e site.zip _site
+          test -f _site/index.html
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
