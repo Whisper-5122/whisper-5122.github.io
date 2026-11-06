@@ -1,5 +1,5 @@
 name: Publish Whisper website
-run-name: Whisper 个人网站
+run-name: Whisper 个人网站 · 第 ${{ github.run_number }} 次发布
 on:
   workflow_dispatch:
   push:
