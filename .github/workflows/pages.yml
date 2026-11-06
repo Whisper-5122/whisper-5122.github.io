@@ -1,8 +1,10 @@
-name: Publish Whisper portfolio
+name: Publish Whisper website
+run-name: Whisper 个人网站
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+    paths: [.github/workflows/pages.yml]
 permissions:
   contents: read
 concurrency:
