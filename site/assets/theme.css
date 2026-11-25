@@ -1,6 +1,48 @@
 /* One light background; grass green identifies actions and small accents. */
 :root{--grass:#8cc63f;--grass-bright:#a6dc60;--grass-text:#416d1a;--grass-pale:#e7f0db;--ground:#f2f5ed;--paper:#fff;--ink:#1b2b1c;--secondary:#53634e;--olive:var(--grass-text);--edge:#d5decf;--soft:#e7ece1;color-scheme:light}
 html{scrollbar-gutter:stable}
+/* Keep the reading frame aligned, including on displays wider than 1920px. */
+:root{--page-space:max(8.3333vw,calc((100vw - 1440px)/2))}
+.section-shell,.identity-hero,.chapter-sticky,.cinema-section{max-width:none}
+.project-hero{margin-inline:var(--page-space);max-width:none}
+.site-header nav a{white-space:nowrap}
+body[data-page=home] .site-header nav a{font-size:14px}
+.identity-actions .button{font-size:15px;gap:22px;line-height:1.4}
+.identity-actions>a{white-space:nowrap;flex-shrink:0}
+.identity-about{font-size:15px;padding-inline:14px}
+body[data-page=home] .header-signature{font-size:14px;gap:10px}
+body[data-page=home] .identity-titles li{font-size:13px;line-height:1.5;padding:5px 4px;white-space:nowrap}
+/* Full images stay intact; archive thumbnails use the approved editorial framing. */
+.chapter-visual img,.archive-cover>img,.activity-photo img{object-fit:contain}
+[data-archive-group="建成"] .archive-cover>img,[data-archive-group="待建成"] .archive-cover>img{object-fit:cover}
+.archive-cover{background:var(--soft)}
+.archive-cover-left-half>img{width:200%;max-width:none;object-fit:cover}
+.archive-card>a:hover .archive-cover>img,.work-image:hover img{transform:none}
+@media(min-width:1000px){
+  body[data-page=home] .identity-hero{grid-template-columns:minmax(0,.82fr) minmax(0,1.25fr);column-gap:clamp(32px,4vw,64px)}
+  body[data-page=home] .identity-brand{font-size:clamp(64px,6.1vw,110px)}
+}
+@media(max-width:1200px){
+  :root{--page-space:48px}
+  .header-signature{display:none}
+  .menu-toggle{display:flex;order:3}
+  body[data-page] .site-header nav{display:none;position:absolute;top:var(--header-height);left:0;right:0;width:100%;transform:none;padding:18px var(--page-space) 24px;background:var(--ground);border-bottom:1px solid var(--edge);gap:0;box-shadow:0 14px 16px -16px #1c281a33}
+  body[data-page].menu-open #site-nav{display:flex;flex-direction:column;align-items:stretch}
+  body[data-page] .site-header nav a{min-height:54px;font-size:16px}
+  body[data-page=home] .site-header nav a[aria-current=location]:after{right:auto;width:28px;bottom:7px}
+}
+@media(max-width:760px){
+  :root{--page-space:clamp(24px,7vw,28px)}
+  .cinema-section{padding-inline:var(--page-space)}
+  .cinema-heading,.cinema-note{padding-inline:0}
+  .aigc-gallery{margin-inline:0}
+  .identity-actions{flex-wrap:wrap}
+  .identity-actions .button{gap:10px}
+  .identity-about{font-size:14px}
+  body[data-page=home] .identity-titles li{font-size:12px;padding:4px 2px}
+}
+@media(max-width:370px){.identity-actions{gap:14px}.identity-actions .button{padding-inline:14px;gap:6px}.identity-about{padding-inline:12px}}
+@media(min-width:761px) and (max-width:1100px){.identity-actions .button{gap:10px}}
 body:is([data-page=home],[data-page=images],[data-page=awards]){--ground:#f2f5ed;--ink:#1b2b1c;--secondary:#53634e;--olive:var(--grass-text);--edge:#d5decf;--soft:#e7ece1;background:var(--ground);color:var(--ink);color-scheme:light}
 ::selection{background:var(--grass);color:#14250f}
 body[data-page] .brand-dot{background:var(--grass)}

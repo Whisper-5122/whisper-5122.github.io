@@ -62,9 +62,13 @@ function restoreEntryPosition(){
   safeSession.remove('whisper:restore-position');
   // Run after pageshow so fonts, fragment navigation and pinned chapters have settled.
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const matches=$$('a[href]').filter(a=>a.href===previous.focusHref);
-    matches[previous.focusIndex||0]?.focus({preventScroll:true});
     window.scrollTo({top:previous.scrollY,behavior:'instant'});
+    // Restore the visible chapter before focusing a link that may still be inert.
+    document.dispatchEvent(new Event('whisper:position-restored'));
+    requestAnimationFrame(()=>{
+      const matches=$$('a[href]').filter(a=>a.href===previous.focusHref);
+      matches[previous.focusIndex||0]?.focus({preventScroll:true});
+    });
   }));
 }
 window.addEventListener('pageshow',restoreEntryPosition);

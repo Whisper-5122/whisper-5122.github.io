@@ -1,8 +1,7 @@
 'use strict';
-// Scroll stays native. The fixed gallery translates only while its section is in view.
+// Scroll stays native. Chapters crossfade inside a steady picture frame.
 const chapterSection=document.querySelector('[data-scroll-chapters]');
 if(chapterSection){
-  const track=chapterSection.querySelector('.chapter-track');
   const panels=[...chapterSection.querySelectorAll('.chapter-panel')];
   const controls=[...chapterSection.querySelectorAll('[data-chapter]')];
   const count=chapterSection.querySelector('[data-chapter-count]');
@@ -12,14 +11,16 @@ if(chapterSection){
   const sections=links.map(link=>document.querySelector(link.hash)).filter(Boolean);
   const meter=document.querySelector('[data-reading-progress]');
   const header=document.querySelector('.site-header');
-  let enhanced=false,active=-1,frame=0;
+  let enhanced=false,active=-1,frame=0,currentSection=null;
 
   function select(index){
     if(index===active)return;
+    if(enhanced&&active>=0&&panels[active].contains(document.activeElement))controls[index].focus({preventScroll:true});
     active=index;
     controls.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
     count.textContent=String(index+1).padStart(2,'0');
     panels.forEach((panel,i)=>{
+      panel.classList.toggle('is-current',i===index);
       panel.inert=enhanced&&i!==index;
       if(enhanced&&i!==index)panel.setAttribute('aria-hidden','true');else panel.removeAttribute('aria-hidden');
     });
@@ -27,22 +28,25 @@ if(chapterSection){
 
   function paint(){
     frame=0;
+    // Finish geometry reads before changing styles, focus or accessibility state.
     const headerHeight=header.getBoundingClientRect().height;
+    const rect=enhanced?chapterSection.getBoundingClientRect():null;
+    const readingRange=document.documentElement.scrollHeight-innerHeight;
+    const readingProgress=Math.max(0,Math.min(1,scrollY/Math.max(1,readingRange)));
+    let current=null;
+    for(const section of sections)if(section.getBoundingClientRect().top<=headerHeight+innerHeight*.3)current=section.id;
     if(enhanced){
-      const rect=chapterSection.getBoundingClientRect();
       const travel=rect.height-(innerHeight-headerHeight);
-      const progress=Math.max(0,Math.min(1,(headerHeight-rect.top)/travel));
-      // Scroll chooses a complete chapter; CSS finishes the slide even after input stops.
+      const progress=Math.max(0,Math.min(1,(headerHeight-rect.top)/Math.max(1,travel)));
       const index=Math.min(panels.length-1,Math.round(progress*(panels.length-1)));
-      track.style.setProperty('--chapter-offset',(-index*100)+'%');
       select(index);
       chapterSection.classList.add('is-chapter-ready');
     }
-    const readingRange=document.documentElement.scrollHeight-innerHeight;
-    if(meter)meter.style.transform='scaleX('+Math.max(0,Math.min(1,scrollY/Math.max(1,readingRange)))+')';
-    let current=null;
-    for(const section of sections)if(section.getBoundingClientRect().top<=headerHeight+innerHeight*.3)current=section.id;
-    links.forEach(link=>{if(link.hash==='#'+current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});
+    if(meter)meter.style.transform='scaleX('+readingProgress+')';
+    if(current!==currentSection){
+      currentSection=current;
+      links.forEach(link=>{if(link.hash==='#'+current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});
+    }
   }
   function schedule(){if(!frame)frame=requestAnimationFrame(paint);}
   function configure(){
@@ -50,7 +54,6 @@ if(chapterSection){
     enhanced=desktop.matches&&!reduced.matches;
     chapterSection.classList.toggle('is-scroll-enhanced',enhanced);
     active=-1;
-    if(!enhanced){track.style.removeProperty('--chapter-offset');panels.forEach(panel=>{panel.inert=false;panel.removeAttribute('aria-hidden');});}
     select(0);schedule();
   }
   controls.forEach((button,index)=>button.addEventListener('click',()=>{
@@ -58,12 +61,13 @@ if(chapterSection){
     if(enhanced){
       const travel=chapterSection.offsetHeight-(innerHeight-headerHeight);
       const target=chapterSection.getBoundingClientRect().top+scrollY-headerHeight+travel*index/(panels.length-1);
-      // Within the pinned stage, only the horizontal slide needs animation.
+      // The page moves instantly; only the chapter content needs a transition.
       scrollTo({top:target,behavior:'instant'});
     }else panels[index].scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});
   }));
   window.addEventListener('scroll',schedule,{passive:true});
   window.addEventListener('resize',schedule,{passive:true});
+  document.addEventListener('whisper:position-restored',()=>{if(frame)cancelAnimationFrame(frame);paint();});
   desktop.addEventListener('change',configure);reduced.addEventListener('change',configure);
   configure();
 }

@@ -1,5 +1,6 @@
 /* Beta 1 uses real project photography and film excerpts within the established palette. */
 body[data-page=home] .scene-composition{align-self:center}
+@media(max-width:760px){body[data-page=home] .scene-composition{align-self:stretch;width:100%}}
 body[data-page=home] .scene-perspective{flex:none;min-height:0}
 body[data-page=home] .scene-stage{height:auto;min-height:0;aspect-ratio:1600/797}
 .aigc-work-card>a{display:flex;flex-direction:column;align-items:stretch;gap:18px;padding:20px;height:100%}
